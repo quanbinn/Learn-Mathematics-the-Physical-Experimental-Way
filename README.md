@@ -1,4 +1,4 @@
-# Learn-Mathematics-The-Physical-Experimental-Way
+# Learn Mathematics the Physical‑Experimental Way
 ## 《用实体实验法学数学》
 
 <a href="ttps://study.163.com/courses-search?keyword=实体实验法#/?scht=30)"><img src="/images/封面.jpg" width="400"></a>
