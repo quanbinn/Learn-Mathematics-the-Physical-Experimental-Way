@@ -1,0 +1,60 @@
+用matplotlib写出下面的代码：
+
+绘出y^2= 4*4*x的抛物线，
+
+绘出(x-2*6)^2+y^2 = 4*6^2的圆
+绘出(x-2*5.5)^2+y^2 = 4*5.5^2的圆
+绘出(x-2*5)^2+y^2 = 4*5^2的圆
+绘出(x-2*4.5)^2+y^2 = 4*4.5^2的圆
+
+绘出(x-2*4)^2+y^2 = 4*4^2的圆
+绘出(x-2*3.5)^2+y^2 = 4*3.5^2的圆
+绘出(x-2*3)^2+y^2 = 4*3^2的圆
+绘出(x-2*2.5)^2+y^2 = 4*2.5^2的圆
+
+--------------------------------------------------
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+plt.figure(figsize=(10, 8))
+
+# 1. 抛物线 y^2 = 16x
+x_vals = np.linspace(0, 22, 500)
+y_positive = 4 * np.sqrt(x_vals)
+y_negative = -4 * np.sqrt(x_vals)
+
+plt.plot(x_vals, y_positive, 'b-', linewidth=2.5, label=r'$y^2 = 16x$')
+plt.plot(x_vals, y_negative, 'b-', linewidth=2.5)
+
+# 2. 定义各圆的参数 c (圆心 = 2c, 半径 = 2c)
+c_values = [6, 5.5, 5, 4.5, 4, 3.5, 3, 2.5]
+colors = plt.cm.viridis(np.linspace(0, 1, len(c_values)))
+
+for c, col in zip(c_values, colors):
+    R = 2 * c
+    cx = 2 * c
+    theta = np.linspace(0, 2*np.pi, 300)
+    x_circle = cx + R * np.cos(theta)
+    y_circle = R * np.sin(theta)
+    # 图例显示方程
+    label = f'$(x-{cx:.1f})^2+y^2={R**2:.0f}$'
+    plt.plot(x_circle, y_circle, color=col, linewidth=1.5, label=label)
+
+# 3. 标记顶点
+plt.plot(0, 0, 'ko', markersize=8)
+plt.text(0, -2, 'Vertex (0,0)', ha='center', fontsize=10)
+
+# 4. 坐标轴与样式
+plt.xlim(-2, 24)
+plt.ylim(-13, 13)
+plt.axhline(0, color='black', linewidth=0.5)
+plt.axvline(0, color='black', linewidth=0.5)
+plt.xlabel('x')
+plt.ylabel('y')
+plt.title('Parabola $y^2=16x$ and a Family of Circles Passing Through the Origin')
+plt.grid(True, linestyle='--', alpha=0.6)
+plt.legend(loc='upper right', fontsize=7, ncol=2)
+plt.axis('equal')
+plt.tight_layout()
+plt.show()
