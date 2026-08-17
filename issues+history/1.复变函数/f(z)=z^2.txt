@@ -1,0 +1,727 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# ------------------------------------------------------------
+# 定义 5 个输入点 (满足 1 < a < 10, 1 < b < 10)
+# ------------------------------------------------------------
+z_points = [2 + 3j, 3 + 4j, 5 + 2j, 7 + 8j, 9 + 6j]
+
+# 计算它们的平方 (输出点)
+w_points = [z ** 2 for z in z_points]
+
+# 打印数值，方便核对
+print("输入 z (a+bi)  ->  输出 w = z^2")
+for z, w in zip(z_points, w_points):
+    print(f"z = {z}  ->  w = {w}")
+
+# ------------------------------------------------------------
+# 创建画布：左边显示输入，右边显示输出
+# ------------------------------------------------------------
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
+
+# ------------------------------------------------------------
+# 左图：输入平面 (z-plane)
+# ------------------------------------------------------------
+ax1.set_title("Input plane: 5 points z", fontsize=14)
+ax1.set_xlabel("Real", fontsize=12)
+ax1.set_ylabel("Imaginary", fontsize=12)
+ax1.axhline(0, color='black', linewidth=0.8)
+ax1.axvline(0, color='black', linewidth=0.8)
+ax1.grid(True, linestyle='--', alpha=0.5)
+ax1.set_xlim(0, 11)
+ax1.set_ylim(0, 11)
+ax1.set_aspect('equal')
+
+# 绘制每个输入点：蓝色箭头 + 蓝色散点
+colors = ['blue', 'green', 'cyan', 'purple', 'orange']
+for idx, z in enumerate(z_points):
+    ax1.arrow(0, 0, z.real, z.imag, head_width=0.2, head_length=0.2,
+              fc=colors[idx], ec=colors[idx], alpha=0.6)
+    ax1.scatter(z.real, z.imag, color=colors[idx], s=100, zorder=5)
+    ax1.text(z.real + 0.3, z.imag + 0.2, f'z_{idx+1}', fontsize=11, color=colors[idx])
+
+# ------------------------------------------------------------
+# 右图：输出平面 (w-plane)
+# ------------------------------------------------------------
+ax2.set_title("Output plane: mapped points w = z²", fontsize=14)
+ax2.set_xlabel("Real", fontsize=12)
+ax2.set_ylabel("Imaginary", fontsize=12)
+ax2.axhline(0, color='black', linewidth=0.8)
+ax2.axvline(0, color='black', linewidth=0.8)
+ax2.grid(True, linestyle='--', alpha=0.5)
+
+# 自动根据数据调整坐标范围，再往外扩一点留白
+all_real = [w.real for w in w_points]
+all_imag = [w.imag for w in w_points]
+x_margin = max(abs(min(all_real)), abs(max(all_real))) * 0.2 + 1
+y_margin = max(abs(min(all_imag)), abs(max(all_imag))) * 0.2 + 1
+ax2.set_xlim(min(all_real) - x_margin, max(all_real) + x_margin)
+ax2.set_ylim(min(all_imag) - y_margin, max(all_imag) + y_margin)
+ax2.set_aspect('equal')
+
+# 绘制每个输出点：红色箭头 + 红色散点（保持颜色对应）
+for idx, w in enumerate(w_points):
+    ax2.arrow(0, 0, w.real, w.imag, head_width=0.5, head_length=0.5,
+              fc=colors[idx], ec=colors[idx], alpha=0.6)
+    ax2.scatter(w.real, w.imag, color=colors[idx], s=100, zorder=5)
+    ax2.text(w.real + 0.5, w.imag + 0.5, f'w_{idx+1}', fontsize=11, color=colors[idx])
+
+plt.tight_layout()
+plt.show()
+------------------------------------------
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+# ------------------------------------------------------------
+# 定义复变函数 f(z) = z^2
+# ------------------------------------------------------------
+def f(z):
+    return z ** 2
+
+# ------------------------------------------------------------
+# 5 个输入点 (满足 1<a<10, 1<b<10)
+# ------------------------------------------------------------
+z_points = [2 + 3j, 3 + 4j, 5 + 2j, 7 + 8j, 9 + 6j]
+w_points = [f(z) for z in z_points]
+
+# 提取所有不同的 x 和 y 坐标（用于画网格线）
+xs = sorted(set([z.real for z in z_points]))
+ys = sorted(set([z.imag for z in z_points]))
+
+# 定义输入平面的画图范围
+x_min, x_max = 1, 10
+y_min, y_max = 1, 10
+
+# ------------------------------------------------------------
+# 创建画布
+# ------------------------------------------------------------
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
+
+# ------------------------------------------------------------
+# 左图：输入平面 (z-plane)
+# ------------------------------------------------------------
+ax1.set_title("Input plane: grid lines through the 5 points", fontsize=14)
+ax1.set_xlabel("Real", fontsize=12)
+ax1.set_ylabel("Imaginary", fontsize=12)
+ax1.axhline(0, color='black', linewidth=0.5, linestyle='--')
+ax1.axvline(0, color='black', linewidth=0.5, linestyle='--')
+ax1.set_xlim(x_min - 0.5, x_max + 0.5)
+ax1.set_ylim(y_min - 0.5, y_max + 0.5)
+ax1.set_aspect('equal')
+ax1.grid(True, linestyle=':', alpha=0.3)
+
+# ---- 画竖直线 (x = 常数) ----
+for x_val in xs:
+    # 只在 y 范围内画线
+    y_vals = np.linspace(y_min, y_max, 100)
+    z_vals = x_val + 1j * y_vals
+    ax1.plot(z_vals.real, z_vals.imag, 'b-', linewidth=1.5, alpha=0.5)
+
+# ---- 画水平线 (y = 常数) ----
+for y_val in ys:
+    x_vals = np.linspace(x_min, x_max, 100)
+    z_vals = x_vals + 1j * y_val
+    ax1.plot(z_vals.real, z_vals.imag, 'r-', linewidth=1.5, alpha=0.5)
+
+# ---- 画出 5 个输入点 ----
+colors = ['blue', 'green', 'cyan', 'purple', 'orange']
+for idx, z in enumerate(z_points):
+    ax1.scatter(z.real, z.imag, color=colors[idx], s=100, zorder=5)
+    ax1.text(z.real + 0.2, z.imag + 0.2, f'z_{idx+1}', fontsize=10, color=colors[idx])
+
+# ------------------------------------------------------------
+# 右图：输出平面 (w-plane)
+# ------------------------------------------------------------
+ax2.set_title("Output plane: mapped grid lines (parabolas)", fontsize=14)
+ax2.set_xlabel("Real", fontsize=12)
+ax2.set_ylabel("Imaginary", fontsize=12)
+ax2.axhline(0, color='black', linewidth=0.5, linestyle='--')
+ax2.axvline(0, color='black', linewidth=0.5, linestyle='--')
+ax2.grid(True, linestyle=':', alpha=0.3)
+ax2.set_aspect('equal')
+
+# ---- 映射竖直线 (x = 常数) -> 抛物线 ----
+# 每条竖直线用 200 个点采样，确保曲线平滑
+for x_val in xs:
+    y_vals = np.linspace(y_min, y_max, 200)
+    z_vals = x_val + 1j * y_vals
+    w_vals = f(z_vals)
+    ax2.plot(w_vals.real, w_vals.imag, 'b-', linewidth=1.5, alpha=0.5)
+
+# ---- 映射水平线 (y = 常数) -> 抛物线 ----
+for y_val in ys:
+    x_vals = np.linspace(x_min, x_max, 200)
+    z_vals = x_vals + 1j * y_val
+    w_vals = f(z_vals)
+    ax2.plot(w_vals.real, w_vals.imag, 'r-', linewidth=1.5, alpha=0.5)
+
+# ---- 画出 5 个输出点 ----
+for idx, w in enumerate(w_points):
+    ax2.scatter(w.real, w.imag, color=colors[idx], s=100, zorder=5)
+    ax2.text(w.real + 0.5, w.imag + 0.5, f'w_{idx+1}', fontsize=10, color=colors[idx])
+
+# 自动调整输出坐标轴范围，让所有曲线和点完整显示
+all_w_real = [w.real for w in w_points]
+all_w_imag = [w.imag for w in w_points]
+# 还要考虑曲线上的点，我们可以从绘制时收集，或简单加边距
+# 这里计算所有曲线上的点的范围（通过重新采样所有线）
+all_w_real_curve = []
+all_w_imag_curve = []
+for x_val in xs:
+    y_vals = np.linspace(y_min, y_max, 100)
+    w_vals = f(x_val + 1j * y_vals)
+    all_w_real_curve.extend(w_vals.real)
+    all_w_imag_curve.extend(w_vals.imag)
+for y_val in ys:
+    x_vals = np.linspace(x_min, x_max, 100)
+    w_vals = f(x_vals + 1j * y_val)
+    all_w_real_curve.extend(w_vals.real)
+    all_w_imag_curve.extend(w_vals.imag)
+
+xmin_w = min(min(all_w_real), min(all_w_real_curve)) - 2
+xmax_w = max(max(all_w_real), max(all_w_real_curve)) + 2
+ymin_w = min(min(all_w_imag), min(all_w_imag_curve)) - 2
+ymax_w = max(max(all_w_imag), max(all_w_imag_curve)) + 2
+ax2.set_xlim(xmin_w, xmax_w)
+ax2.set_ylim(ymin_w, ymax_w)
+
+# ------------------------------------------------------------
+# 显示图形
+# ------------------------------------------------------------
+plt.tight_layout()
+plt.show()
+-----------------------------------------------
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+# ------------------------------------------------------------
+# 定义复变函数 f(z) = z^2
+# ------------------------------------------------------------
+def f(z):
+    return z ** 2
+
+# ------------------------------------------------------------
+# 5条竖直线的 x 坐标（沿用你原来的）
+# ------------------------------------------------------------
+xs = [2, 3, 5, 7, 9]
+# 每条竖直线取两个 y 值
+y_pair = [2, 8]   # 两个不同高度，让点分布在线上
+
+# 生成10个输入点 (每个 (x, y_pair[0]) 和 (x, y_pair[1]))
+z_points = []
+for x in xs:
+    for y in y_pair:
+        z_points.append(x + 1j * y)
+
+# 计算对应的输出点
+w_points = [f(z) for z in z_points]
+
+# ------------------------------------------------------------
+# 输入平面范围
+# ------------------------------------------------------------
+x_min, x_max = 1, 10
+y_min, y_max = 1, 10
+
+# ------------------------------------------------------------
+# 创建画布
+# ------------------------------------------------------------
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
+
+# ------------------------------------------------------------
+# 左图：输入平面 (z-plane)
+# ------------------------------------------------------------
+ax1.set_title("Input: 5 vertical lines, 2 points each", fontsize=14)
+ax1.set_xlabel("Real", fontsize=12)
+ax1.set_ylabel("Imaginary", fontsize=12)
+ax1.axhline(0, color='black', linewidth=0.5, linestyle='--')
+ax1.axvline(0, color='black', linewidth=0.5, linestyle='--')
+ax1.set_xlim(x_min - 0.5, x_max + 0.5)
+ax1.set_ylim(y_min - 0.5, y_max + 0.5)
+ax1.set_aspect('equal')
+ax1.grid(True, linestyle=':', alpha=0.3)
+
+# ---- 画竖直线 (x = 常数) ----
+for x_val in xs:
+    y_vals = np.linspace(y_min, y_max, 200)
+    z_vals = x_val + 1j * y_vals
+    ax1.plot(z_vals.real, z_vals.imag, 'b-', linewidth=1.5, alpha=0.5)
+
+# ---- 画水平线 (y = 常数) ----
+# 为了完整显示网格，也画出 y = 2 和 y = 8 两条水平线（用红色虚线）
+for y_val in y_pair:
+    x_vals = np.linspace(x_min, x_max, 200)
+    z_vals = x_vals + 1j * y_val
+    ax1.plot(z_vals.real, z_vals.imag, 'r--', linewidth=1.0, alpha=0.3)
+
+# ---- 标出 10 个输入点 ----
+# 为每条竖直线分配一个颜色（5种颜色）
+line_colors = ['blue', 'green', 'cyan', 'purple', 'orange']
+# 对每个点，根据其 x 值选择颜色
+for idx, z in enumerate(z_points):
+    # 找到对应的 x 在 xs 中的索引
+    x_idx = xs.index(z.real)
+    color = line_colors[x_idx]
+    ax1.scatter(z.real, z.imag, color=color, s=120, zorder=5, edgecolors='black')
+    # 标注点编号（可选）
+    ax1.text(z.real + 0.2, z.imag + 0.1, f'({z.real:.0f},{z.imag:.0f})', 
+             fontsize=8, color='black')
+
+# ------------------------------------------------------------
+# 右图：输出平面 (w-plane)
+# ------------------------------------------------------------
+ax2.set_title("Output: mapped parabolas & 10 points", fontsize=14)
+ax2.set_xlabel("Real", fontsize=12)
+ax2.set_ylabel("Imaginary", fontsize=12)
+ax2.axhline(0, color='black', linewidth=0.5, linestyle='--')
+ax2.axvline(0, color='black', linewidth=0.5, linestyle='--')
+ax2.grid(True, linestyle=':', alpha=0.3)
+ax2.set_aspect('equal')
+
+# ---- 映射竖直线 (x = 常数) -> 抛物线 ----
+for x_val in xs:
+    y_vals = np.linspace(y_min, y_max, 200)
+    z_vals = x_val + 1j * y_vals
+    w_vals = f(z_vals)
+    ax2.plot(w_vals.real, w_vals.imag, 'b-', linewidth=1.5, alpha=0.5)
+
+# ---- 映射水平线 (y = 2 和 y = 8) -> 抛物线（用红色虚线） ----
+for y_val in y_pair:
+    x_vals = np.linspace(x_min, x_max, 200)
+    z_vals = x_vals + 1j * y_val
+    w_vals = f(z_vals)
+    ax2.plot(w_vals.real, w_vals.imag, 'r--', linewidth=1.0, alpha=0.3)
+
+# ---- 标出 10 个输出点 ----
+for idx, w in enumerate(w_points):
+    x_idx = xs.index(z_points[idx].real)  # 找到对应竖直线索引
+    color = line_colors[x_idx]
+    ax2.scatter(w.real, w.imag, color=color, s=120, zorder=5, edgecolors='black')
+    ax2.text(w.real + 0.5, w.imag + 0.5, f'w_{idx+1}', fontsize=8, color='black')
+
+# 自动调整输出坐标轴范围
+all_w_real = [w.real for w in w_points]
+all_w_imag = [w.imag for w in w_points]
+# 还要包含曲线上的点，用同样的采样方法
+all_w_real_curve = []
+all_w_imag_curve = []
+for x_val in xs:
+    y_vals = np.linspace(y_min, y_max, 100)
+    w_vals = f(x_val + 1j * y_vals)
+    all_w_real_curve.extend(w_vals.real)
+    all_w_imag_curve.extend(w_vals.imag)
+for y_val in y_pair:
+    x_vals = np.linspace(x_min, x_max, 100)
+    w_vals = f(x_vals + 1j * y_val)
+    all_w_real_curve.extend(w_vals.real)
+    all_w_imag_curve.extend(w_vals.imag)
+
+xmin_w = min(min(all_w_real), min(all_w_real_curve)) - 2
+xmax_w = max(max(all_w_real), max(all_w_real_curve)) + 2
+ymin_w = min(min(all_w_imag), min(all_w_imag_curve)) - 2
+ymax_w = max(max(all_w_imag), max(all_w_imag_curve)) + 2
+ax2.set_xlim(xmin_w, xmax_w)
+ax2.set_ylim(ymin_w, ymax_w)
+
+# ------------------------------------------------------------
+# 显示图形
+# ------------------------------------------------------------
+plt.tight_layout()
+plt.show()
+--------------------------------------------------------------
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+# ------------------------------------------------------------
+# 定义复变函数 f(z) = z^2
+# ------------------------------------------------------------
+def f(z):
+    return z ** 2
+
+# ------------------------------------------------------------
+# 5条竖直线的 x 坐标
+# ------------------------------------------------------------
+xs = [2, 3, 5, 7, 9]
+# 每条竖直线取3个 y 值
+y_triple = [2, 5, 8]   # 均匀分布在 1~10 之间
+
+# 生成15个输入点 (每个 (x, y) 组合)
+z_points = []
+for x in xs:
+    for y in y_triple:
+        z_points.append(x + 1j * y)
+
+# 计算对应的输出点
+w_points = [f(z) for z in z_points]
+
+# ------------------------------------------------------------
+# 输入平面范围
+# ------------------------------------------------------------
+x_min, x_max = 1, 10
+y_min, y_max = 1, 10
+
+# ------------------------------------------------------------
+# 创建画布
+# ------------------------------------------------------------
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
+
+# ------------------------------------------------------------
+# 左图：输入平面 (z-plane)
+# ------------------------------------------------------------
+ax1.set_title("Input: 5 vertical lines, 3 points each", fontsize=14)
+ax1.set_xlabel("Real", fontsize=12)
+ax1.set_ylabel("Imaginary", fontsize=12)
+ax1.axhline(0, color='black', linewidth=0.5, linestyle='--')
+ax1.axvline(0, color='black', linewidth=0.5, linestyle='--')
+ax1.set_xlim(x_min - 0.5, x_max + 0.5)
+ax1.set_ylim(y_min - 0.5, y_max + 0.5)
+ax1.set_aspect('equal')
+ax1.grid(True, linestyle=':', alpha=0.3)
+
+# ---- 画竖直线 (x = 常数) ----
+for x_val in xs:
+    y_vals = np.linspace(y_min, y_max, 200)
+    z_vals = x_val + 1j * y_vals
+    ax1.plot(z_vals.real, z_vals.imag, 'b-', linewidth=1.5, alpha=0.5)
+
+# ---- 画水平线 (y = 常数) 作为辅助 ----
+for y_val in y_triple:
+    x_vals = np.linspace(x_min, x_max, 200)
+    z_vals = x_vals + 1j * y_val
+    ax1.plot(z_vals.real, z_vals.imag, 'r--', linewidth=1.0, alpha=0.3)
+
+# ---- 标出 15 个输入点 ----
+line_colors = ['blue', 'green', 'cyan', 'purple', 'orange']
+# 对每个点，根据其 x 值分配颜色
+for idx, z in enumerate(z_points):
+    x_idx = xs.index(z.real)
+    color = line_colors[x_idx]
+    ax1.scatter(z.real, z.imag, color=color, s=100, zorder=5, edgecolors='black')
+    # 标注坐标，略微偏移避免重叠
+    ax1.text(z.real + 0.15, z.imag + 0.15, f'({z.real:.0f},{z.imag:.0f})',
+             fontsize=7, color='black', alpha=0.8)
+
+# ------------------------------------------------------------
+# 右图：输出平面 (w-plane)
+# ------------------------------------------------------------
+ax2.set_title("Output: mapped parabolas & 15 points", fontsize=14)
+ax2.set_xlabel("Real", fontsize=12)
+ax2.set_ylabel("Imaginary", fontsize=12)
+ax2.axhline(0, color='black', linewidth=0.5, linestyle='--')
+ax2.axvline(0, color='black', linewidth=0.5, linestyle='--')
+ax2.grid(True, linestyle=':', alpha=0.3)
+ax2.set_aspect('equal')
+
+# ---- 映射竖直线 (x = 常数) -> 抛物线 ----
+for x_val in xs:
+    y_vals = np.linspace(y_min, y_max, 200)
+    z_vals = x_val + 1j * y_vals
+    w_vals = f(z_vals)
+    ax2.plot(w_vals.real, w_vals.imag, 'b-', linewidth=1.5, alpha=0.5)
+
+# ---- 映射水平线 (y = 常数) -> 抛物线（辅助线） ----
+for y_val in y_triple:
+    x_vals = np.linspace(x_min, x_max, 200)
+    z_vals = x_vals + 1j * y_val
+    w_vals = f(z_vals)
+    ax2.plot(w_vals.real, w_vals.imag, 'r--', linewidth=1.0, alpha=0.3)
+
+# ---- 标出 15 个输出点 ----
+for idx, w in enumerate(w_points):
+    x_idx = xs.index(z_points[idx].real)
+    color = line_colors[x_idx]
+    ax2.scatter(w.real, w.imag, color=color, s=100, zorder=5, edgecolors='black')
+    # 标注点编号（为了不拥挤，只标序号）
+    ax2.text(w.real + 0.5, w.imag + 0.3, f'p{idx+1}', fontsize=7, color='black', alpha=0.8)
+
+# 自动调整输出坐标轴范围（包含所有曲线和点）
+all_w_real = [w.real for w in w_points]
+all_w_imag = [w.imag for w in w_points]
+# 收集所有曲线上的点（采样）
+all_w_real_curve = []
+all_w_imag_curve = []
+for x_val in xs:
+    y_vals = np.linspace(y_min, y_max, 100)
+    w_vals = f(x_val + 1j * y_vals)
+    all_w_real_curve.extend(w_vals.real)
+    all_w_imag_curve.extend(w_vals.imag)
+for y_val in y_triple:
+    x_vals = np.linspace(x_min, x_max, 100)
+    w_vals = f(x_vals + 1j * y_val)
+    all_w_real_curve.extend(w_vals.real)
+    all_w_imag_curve.extend(w_vals.imag)
+
+xmin_w = min(min(all_w_real), min(all_w_real_curve)) - 2
+xmax_w = max(max(all_w_real), max(all_w_real_curve)) + 2
+ymin_w = min(min(all_w_imag), min(all_w_imag_curve)) - 2
+ymax_w = max(max(all_w_imag), max(all_w_imag_curve)) + 2
+ax2.set_xlim(xmin_w, xmax_w)
+ax2.set_ylim(ymin_w, ymax_w)
+
+# ------------------------------------------------------------
+# 显示图形
+# ------------------------------------------------------------
+plt.tight_layout()
+plt.show()
+----------------------------------------------
+import numpy as np
+import matplotlib.pyplot as plt
+
+# ------------------------------------------------------------
+# 定义复变函数 f(z) = z^2
+# ------------------------------------------------------------
+def f(z):
+    return z ** 2
+
+# ------------------------------------------------------------
+# 5条竖直线的 x 坐标
+# ------------------------------------------------------------
+xs = [2, 3, 5, 7, 9]
+# 每条竖直线取5个 y 值（均匀分布）
+y_five = [2, 4, 6, 8, 10]
+
+# 生成25个输入点
+z_points = []
+for x in xs:
+    for y in y_five:
+        z_points.append(x + 1j * y)
+
+w_points = [f(z) for z in z_points]
+
+# ------------------------------------------------------------
+# 输入平面范围
+# ------------------------------------------------------------
+x_min, x_max = 1, 10
+y_min, y_max = 1, 10
+
+# ------------------------------------------------------------
+# 创建画布
+# ------------------------------------------------------------
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
+
+# ------------------------------------------------------------
+# 左图：输入平面 (z-plane)
+# ------------------------------------------------------------
+ax1.set_title("Input: 5 vertical lines, 5 points each", fontsize=14)
+ax1.set_xlabel("Real", fontsize=12)
+ax1.set_ylabel("Imaginary", fontsize=12)
+ax1.axhline(0, color='black', linewidth=0.5, linestyle='--')
+ax1.axvline(0, color='black', linewidth=0.5, linestyle='--')
+ax1.set_xlim(x_min - 0.5, x_max + 0.5)
+ax1.set_ylim(y_min - 0.5, y_max + 0.5)
+ax1.set_aspect('equal')
+ax1.grid(True, linestyle=':', alpha=0.3)
+
+# 画竖直线
+for x_val in xs:
+    y_vals = np.linspace(y_min, y_max, 200)
+    z_vals = x_val + 1j * y_vals
+    ax1.plot(z_vals.real, z_vals.imag, 'b-', linewidth=1.5, alpha=0.5)
+
+# 画水平辅助线
+for y_val in y_five:
+    x_vals = np.linspace(x_min, x_max, 200)
+    z_vals = x_vals + 1j * y_val
+    ax1.plot(z_vals.real, z_vals.imag, 'r--', linewidth=0.8, alpha=0.3)
+
+# 标出25个点
+line_colors = ['blue', 'green', 'cyan', 'purple', 'orange']
+for idx, z in enumerate(z_points):
+    x_idx = xs.index(z.real)
+    color = line_colors[x_idx]
+    ax1.scatter(z.real, z.imag, color=color, s=60, zorder=5, edgecolors='black', alpha=0.8)
+    # 只标注序号，不标坐标，避免遮挡
+    ax1.text(z.real + 0.15, z.imag + 0.15, str(idx+1), fontsize=6, color='black', alpha=0.7)
+
+# ------------------------------------------------------------
+# 右图：输出平面 (w-plane)
+# ------------------------------------------------------------
+ax2.set_title("Output: mapped parabolas & 25 points", fontsize=14)
+ax2.set_xlabel("Real", fontsize=12)
+ax2.set_ylabel("Imaginary", fontsize=12)
+ax2.axhline(0, color='black', linewidth=0.5, linestyle='--')
+ax2.axvline(0, color='black', linewidth=0.5, linestyle='--')
+ax2.grid(True, linestyle=':', alpha=0.3)
+ax2.set_aspect('equal')
+
+# 映射竖直线
+for x_val in xs:
+    y_vals = np.linspace(y_min, y_max, 200)
+    z_vals = x_val + 1j * y_vals
+    w_vals = f(z_vals)
+    ax2.plot(w_vals.real, w_vals.imag, 'b-', linewidth=1.5, alpha=0.5)
+
+# 映射水平辅助线
+for y_val in y_five:
+    x_vals = np.linspace(x_min, x_max, 200)
+    z_vals = x_vals + 1j * y_val
+    w_vals = f(z_vals)
+    ax2.plot(w_vals.real, w_vals.imag, 'r--', linewidth=0.8, alpha=0.3)
+
+# 标出输出点
+for idx, w in enumerate(w_points):
+    x_idx = xs.index(z_points[idx].real)
+    color = line_colors[x_idx]
+    ax2.scatter(w.real, w.imag, color=color, s=60, zorder=5, edgecolors='black', alpha=0.8)
+    ax2.text(w.real + 0.5, w.imag + 0.3, str(idx+1), fontsize=6, color='black', alpha=0.7)
+
+# 自动调整坐标范围（包含所有曲线和点）
+all_w_real_curve = []
+all_w_imag_curve = []
+for x_val in xs:
+    y_vals = np.linspace(y_min, y_max, 100)
+    w_vals = f(x_val + 1j * y_vals)
+    all_w_real_curve.extend(w_vals.real)
+    all_w_imag_curve.extend(w_vals.imag)
+for y_val in y_five:
+    x_vals = np.linspace(x_min, x_max, 100)
+    w_vals = f(x_vals + 1j * y_val)
+    all_w_real_curve.extend(w_vals.real)
+    all_w_imag_curve.extend(w_vals.imag)
+
+all_w_real = [w.real for w in w_points]
+all_w_imag = [w.imag for w in w_points]
+
+xmin_w = min(min(all_w_real), min(all_w_real_curve)) - 2
+xmax_w = max(max(all_w_real), max(all_w_real_curve)) + 2
+ymin_w = min(min(all_w_imag), min(all_w_imag_curve)) - 2
+ymax_w = max(max(all_w_imag), max(all_w_imag_curve)) + 2
+ax2.set_xlim(xmin_w, xmax_w)
+ax2.set_ylim(ymin_w, ymax_w)
+
+plt.tight_layout()
+plt.show()
+-----------------------------------
+import numpy as np
+import matplotlib.pyplot as plt
+
+# ------------------------------------------------------------
+# 定义复变函数 f(z) = z^2
+# ------------------------------------------------------------
+def f(z):
+    return z ** 2
+
+# ------------------------------------------------------------
+# 5条竖直线的 x 坐标
+# ------------------------------------------------------------
+xs = [2, 3, 5, 7, 9]
+# 每条竖直线取10个 y 值：从1到10均匀分布（包含端点）
+y_ten = np.linspace(1, 10, 10)  # 10个点
+
+# 生成50个输入点
+z_points = []
+for x in xs:
+    for y in y_ten:
+        z_points.append(x + 1j * y)
+
+w_points = [f(z) for z in z_points]
+
+# ------------------------------------------------------------
+# 输入平面范围
+# ------------------------------------------------------------
+x_min, x_max = 1, 10
+y_min, y_max = 1, 10
+
+# ------------------------------------------------------------
+# 创建画布
+# ------------------------------------------------------------
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
+
+# ------------------------------------------------------------
+# 左图：输入平面 (z-plane)
+# ------------------------------------------------------------
+ax1.set_title("Input: 5 vertical lines, 10 points each", fontsize=14)
+ax1.set_xlabel("Real", fontsize=12)
+ax1.set_ylabel("Imaginary", fontsize=12)
+ax1.axhline(0, color='black', linewidth=0.5, linestyle='--')
+ax1.axvline(0, color='black', linewidth=0.5, linestyle='--')
+ax1.set_xlim(x_min - 0.5, x_max + 0.5)
+ax1.set_ylim(y_min - 0.5, y_max + 0.5)
+ax1.set_aspect('equal')
+ax1.grid(True, linestyle=':', alpha=0.3)
+
+# 画竖直线
+for x_val in xs:
+    y_vals = np.linspace(y_min, y_max, 200)
+    z_vals = x_val + 1j * y_vals
+    ax1.plot(z_vals.real, z_vals.imag, 'b-', linewidth=1.5, alpha=0.5)
+
+# 画水平辅助线（只画边界和中间一条，减少杂乱）
+aux_y = [y_ten[0], y_ten[-1]]  # 只画两端
+# 加一条中间线
+mid = len(y_ten)//2
+aux_y.append(y_ten[mid])
+for y_val in aux_y:
+    x_vals = np.linspace(x_min, x_max, 200)
+    z_vals = x_vals + 1j * y_val
+    ax1.plot(z_vals.real, z_vals.imag, 'r--', linewidth=0.8, alpha=0.3)
+
+# 标出所有点（点大小小一点）
+line_colors = ['blue', 'green', 'cyan', 'purple', 'orange']
+for idx, z in enumerate(z_points):
+    x_idx = xs.index(z.real)
+    color = line_colors[x_idx]
+    ax1.scatter(z.real, z.imag, color=color, s=30, zorder=5, edgecolors='black', alpha=0.8)
+
+# ------------------------------------------------------------
+# 右图：输出平面 (w-plane)
+# ------------------------------------------------------------
+ax2.set_title("Output: mapped parabolas & 50 points", fontsize=14)
+ax2.set_xlabel("Real", fontsize=12)
+ax2.set_ylabel("Imaginary", fontsize=12)
+ax2.axhline(0, color='black', linewidth=0.5, linestyle='--')
+ax2.axvline(0, color='black', linewidth=0.5, linestyle='--')
+ax2.grid(True, linestyle=':', alpha=0.3)
+ax2.set_aspect('equal')
+
+# 映射竖直线
+for x_val in xs:
+    y_vals = np.linspace(y_min, y_max, 200)
+    z_vals = x_val + 1j * y_vals
+    w_vals = f(z_vals)
+    ax2.plot(w_vals.real, w_vals.imag, 'b-', linewidth=1.5, alpha=0.5)
+
+# 映射水平辅助线（对应左图）
+for y_val in aux_y:
+    x_vals = np.linspace(x_min, x_max, 200)
+    z_vals = x_vals + 1j * y_val
+    w_vals = f(z_vals)
+    ax2.plot(w_vals.real, w_vals.imag, 'r--', linewidth=0.8, alpha=0.3)
+
+# 标出输出点
+for idx, w in enumerate(w_points):
+    x_idx = xs.index(z_points[idx].real)
+    color = line_colors[x_idx]
+    ax2.scatter(w.real, w.imag, color=color, s=30, zorder=5, edgecolors='black', alpha=0.8)
+
+# 自动调整坐标范围（包含所有曲线和点）
+all_w_real_curve = []
+all_w_imag_curve = []
+for x_val in xs:
+    y_vals = np.linspace(y_min, y_max, 100)
+    w_vals = f(x_val + 1j * y_vals)
+    all_w_real_curve.extend(w_vals.real)
+    all_w_imag_curve.extend(w_vals.imag)
+for y_val in aux_y:  # 只对画出的辅助线采样
+    x_vals = np.linspace(x_min, x_max, 100)
+    w_vals = f(x_vals + 1j * y_val)
+    all_w_real_curve.extend(w_vals.real)
+    all_w_imag_curve.extend(w_vals.imag)
+
+all_w_real = [w.real for w in w_points]
+all_w_imag = [w.imag for w in w_points]
+
+xmin_w = min(min(all_w_real), min(all_w_real_curve)) - 2
+xmax_w = max(max(all_w_real), max(all_w_real_curve)) + 2
+ymin_w = min(min(all_w_imag), min(all_w_imag_curve)) - 2
+ymax_w = max(max(all_w_imag), max(all_w_imag_curve)) + 2
+ax2.set_xlim(xmin_w, xmax_w)
+ax2.set_ylim(ymin_w, ymax_w)
+
+plt.tight_layout()
+plt.show()
+
+
+
