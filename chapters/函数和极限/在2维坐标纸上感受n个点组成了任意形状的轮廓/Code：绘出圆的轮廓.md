@@ -10,7 +10,7 @@
 
 ### 在线调试环境2
 
-- 单击右方的[Python Online Compiler](https://trinket.io/python3/a5bd54189b)，稍后在浏览器里会显示python的运行环境。
+- 单击右方的[Python Online Compiler](https://coddy.tech/playground/matplotlib)，稍后在浏览器里会显示python的运行环境。
 - 把下面的这段python代码拷贝到这个页面左侧的空白栏中， 然后单击上方的按键“Run”。
 
 ### 圆形
