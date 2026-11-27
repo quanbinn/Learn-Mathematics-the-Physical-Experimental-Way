@@ -1,4 +1,4 @@
-# Code：计算出非整数次幂的二项式系数
+# Code：计算出有理数次幂的二项式系数
 
 ## 打开实验文件
 
@@ -20,7 +20,7 @@ n, k = 5.5, 2
 print(generalized_binomial_coefficient(n, k))  # 输出一个浮点数
 ```
 
-### 计算出非整数次幂的二项式的数值
+### 计算出有理数次幂的二项式系数的数值
 ```python
 import math
 from math import gamma
